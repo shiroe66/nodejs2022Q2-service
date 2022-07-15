@@ -1,26 +1,51 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InMemoryDB } from 'src/helpers/InMemoryDB';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
+import { Track } from './entities/track.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class TrackService {
-  create(createTrackDto: CreateTrackDto) {
-    return 'This action adds a new track';
+  constructor(private readonly inMemoryDB: InMemoryDB<Track>) {}
+
+  create(CreateTrackDto: CreateTrackDto): Track {
+    const track = {
+      ...CreateTrackDto,
+      id: uuidv4(),
+    };
+
+    this.inMemoryDB.create(track);
+    return track;
   }
 
-  findAll() {
-    return `This action returns all track`;
+  findAll(): Track[] {
+    return this.inMemoryDB.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} track`;
+  findOne(id: string): Track {
+    const track = this.inMemoryDB.findOne(id);
+
+    if (!track) {
+      throw new NotFoundException(`Track with id ${id} not found`);
+    }
+
+    return track;
   }
 
-  update(id: number, updateTrackDto: UpdateTrackDto) {
-    return `This action updates a #${id} track`;
+  update(id: string, UpdateTrackDto: UpdateTrackDto): Track {
+    const track = this.findOne(id);
+
+    return this.inMemoryDB.update(track, { ...UpdateTrackDto, id });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} track`;
+  remove(id: string): string {
+    const isRemoved = this.inMemoryDB.delete(id);
+
+    if (isRemoved) {
+      throw new NotFoundException(`Track with id ${id} not found`);
+    }
+
+    return `Track with id: ${id} removed`;
   }
 }
