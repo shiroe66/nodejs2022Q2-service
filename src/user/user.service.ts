@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InMemoryDB } from 'src/helpers/InMemoryDB';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -38,12 +42,22 @@ export class UserService {
 
   update(id: string, UpdateUserDto: UpdateUserDto): User {
     const user = this.inMemoryDB.findOne(id);
+    const { oldPassword, newPassword } = UpdateUserDto;
 
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
 
-    return this.inMemoryDB.update(id, UpdateUserDto);
+    if (user.password !== oldPassword) {
+      throw new ForbiddenException('Old password is wrong');
+    }
+
+    return this.inMemoryDB.update(id, {
+      ...user,
+      password: newPassword,
+      version: ++user.version,
+      updatedAt: +new Date(),
+    });
   }
 
   remove(id: string): string {
