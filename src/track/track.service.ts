@@ -34,9 +34,7 @@ export class TrackService {
   }
 
   update(id: string, UpdateTrackDto: UpdateTrackDto): Track {
-    const track = this.findOne(id);
-
-    return this.inMemoryDB.update(track, { ...UpdateTrackDto, id });
+    return this.inMemoryDB.update(id, UpdateTrackDto);
   }
 
   remove(id: string): string {

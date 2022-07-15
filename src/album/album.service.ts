@@ -34,9 +34,7 @@ export class AlbumService {
   }
 
   update(id: string, UpdateAlbumDto: UpdateAlbumDto): Album {
-    const album = this.findOne(id);
-
-    return this.inMemoryDB.update(album, { ...UpdateAlbumDto, id });
+    return this.inMemoryDB.update(id, UpdateAlbumDto);
   }
 
   remove(id: string): string {

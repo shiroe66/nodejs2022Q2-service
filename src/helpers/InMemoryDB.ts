@@ -4,11 +4,6 @@ import { Injectable } from '@nestjs/common';
 export class InMemoryDB<T extends { id: string }> {
   list: T[] = [];
 
-  private findIndex(id: string) {
-    const index = this.list.findIndex((item) => item.id === id);
-    return index;
-  }
-
   findAll() {
     return this.list;
   }
@@ -22,11 +17,10 @@ export class InMemoryDB<T extends { id: string }> {
     return item;
   }
 
-  update(item: T, newItem: T) {
-    const index = this.findIndex(item.id);
+  update(id: string, updatedItem: Partial<T>) {
+    const item = this.findOne(id);
 
-    this.list[index] = { ...item, ...newItem };
-    return this.list[index];
+    return Object.assign(item, updatedItem);
   }
 
   delete(id: string) {

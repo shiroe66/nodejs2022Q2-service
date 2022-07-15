@@ -34,9 +34,7 @@ export class ArtistService {
   }
 
   update(id: string, updateArtistDto: UpdateArtistDto): Artist {
-    const artist = this.findOne(id);
-
-    return this.inMemoryDB.update(artist, { ...updateArtistDto, id });
+    return this.inMemoryDB.update(id, updateArtistDto);
   }
 
   remove(id: string): string {
