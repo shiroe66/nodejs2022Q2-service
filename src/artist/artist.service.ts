@@ -34,6 +34,12 @@ export class ArtistService {
   }
 
   update(id: string, updateArtistDto: UpdateArtistDto): Artist {
+    const artist = this.inMemoryDB.findOne(id);
+
+    if (!artist) {
+      throw new NotFoundException(`Artist with id ${id} not found`);
+    }
+
     return this.inMemoryDB.update(id, updateArtistDto);
   }
 

@@ -34,6 +34,12 @@ export class TrackService {
   }
 
   update(id: string, UpdateTrackDto: UpdateTrackDto): Track {
+    const track = this.inMemoryDB.findOne(id);
+
+    if (!track) {
+      throw new NotFoundException(`Track with id ${id} not found`);
+    }
+
     return this.inMemoryDB.update(id, UpdateTrackDto);
   }
 

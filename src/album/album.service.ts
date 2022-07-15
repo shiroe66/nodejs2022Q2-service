@@ -34,6 +34,12 @@ export class AlbumService {
   }
 
   update(id: string, UpdateAlbumDto: UpdateAlbumDto): Album {
+    const album = this.inMemoryDB.findOne(id);
+
+    if (!album) {
+      throw new NotFoundException(`Album with id ${id} not found`);
+    }
+
     return this.inMemoryDB.update(id, UpdateAlbumDto);
   }
 
