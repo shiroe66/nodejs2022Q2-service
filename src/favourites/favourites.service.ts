@@ -33,8 +33,14 @@ export class FavouritesService {
     };
   }
 
-  findAll(): StoreType {
-    return this.inMemoryStore;
+  findAll() {
+    const { albums, artists, tracks } = this.inMemoryStore;
+
+    return {
+      albums: albums.list,
+      artists: artists.list,
+      tracks: tracks.list,
+    };
   }
 
   add(type: string, id: string) {
@@ -50,9 +56,9 @@ export class FavouritesService {
   }
 
   remove(type: string, id: string) {
-    const isRemoved = this.inMemoryStore[type].delete(id);
+    const isNotRemoved = this.inMemoryStore[type].delete(id);
 
-    if (isRemoved) {
+    if (isNotRemoved) {
       throw new NotFoundException(`ID ${id} not found`);
     }
   }
