@@ -1,13 +1,23 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
 import { InMemoryDB } from 'src/helpers/InMemoryDB';
+import { FavouritesService } from 'src/favourites/favourites.service';
 
 @Injectable()
 export class ArtistService {
-  constructor(private readonly inMemoryDB: InMemoryDB<Artist>) {}
+  constructor(
+    private readonly inMemoryDB: InMemoryDB<Artist>,
+    @Inject(forwardRef(() => FavouritesService))
+    private readonly FavouritesService: FavouritesService,
+  ) {}
 
   create(createArtistDto: CreateArtistDto): Artist {
     const artist = {
