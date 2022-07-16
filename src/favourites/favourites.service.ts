@@ -50,9 +50,9 @@ export class FavouritesService {
   }
 
   remove(type: string, id: string) {
-    const store = this.inMemoryStore[type].delete(id);
+    const isRemoved = this.inMemoryStore[type].delete(id);
 
-    if (store) {
+    if (isRemoved) {
       throw new NotFoundException(`ID ${id} not found`);
     }
   }
