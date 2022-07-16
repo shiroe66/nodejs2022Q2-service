@@ -62,4 +62,14 @@ export class FavouritesService {
       throw new NotFoundException(`ID ${id} not found`);
     }
   }
+
+  removeAnywhere(type: string, id: string) {
+    const items = this.inMemoryStore[type].findAll();
+
+    this.inMemoryStore[type].list = items.map((item) => {
+      if (item.id === id) {
+        item = null;
+      }
+    });
+  }
 }

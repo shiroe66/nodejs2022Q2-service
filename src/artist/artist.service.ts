@@ -16,7 +16,7 @@ export class ArtistService {
   constructor(
     private readonly inMemoryDB: InMemoryDB<Artist>,
     @Inject(forwardRef(() => FavouritesService))
-    private readonly FavouritesService: FavouritesService,
+    private readonly favouritesService: FavouritesService,
   ) {}
 
   create(createArtistDto: CreateArtistDto): Artist {
@@ -53,13 +53,13 @@ export class ArtistService {
     return this.inMemoryDB.update(id, updateArtistDto);
   }
 
-  remove(id: string): string {
+  remove(id: string) {
     const isRemoved = this.inMemoryDB.delete(id);
 
     if (isRemoved) {
       throw new NotFoundException(`Artist with id ${id} not found`);
     }
 
-    return `Artist with id: ${id} removed`;
+    this.favouritesService.removeAnywhere('artists', id);
   }
 }

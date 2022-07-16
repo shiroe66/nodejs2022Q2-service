@@ -16,7 +16,7 @@ export class AlbumService {
   constructor(
     private readonly inMemoryDB: InMemoryDB<Album>,
     @Inject(forwardRef(() => FavouritesService))
-    private readonly FavouritesService: FavouritesService,
+    private readonly favouritesService: FavouritesService,
   ) {}
 
   create(CreateAlbumDto: CreateAlbumDto): Album {
@@ -53,13 +53,13 @@ export class AlbumService {
     return this.inMemoryDB.update(id, UpdateAlbumDto);
   }
 
-  remove(id: string): string {
+  remove(id: string) {
     const isRemoved = this.inMemoryDB.delete(id);
 
     if (isRemoved) {
       throw new NotFoundException(`Album with id ${id} not found`);
     }
 
-    return `Album with id: ${id} removed`;
+    this.favouritesService.removeAnywhere('albums', id);
   }
 }

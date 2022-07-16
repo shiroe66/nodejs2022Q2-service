@@ -16,7 +16,7 @@ export class TrackService {
   constructor(
     private readonly inMemoryDB: InMemoryDB<Track>,
     @Inject(forwardRef(() => FavouritesService))
-    private readonly FavouritesService: FavouritesService,
+    private readonly favouritesService: FavouritesService,
   ) {}
 
   create(CreateTrackDto: CreateTrackDto): Track {
@@ -53,13 +53,13 @@ export class TrackService {
     return this.inMemoryDB.update(id, UpdateTrackDto);
   }
 
-  remove(id: string): string {
+  remove(id: string) {
     const isRemoved = this.inMemoryDB.delete(id);
 
     if (isRemoved) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
 
-    return `Track with id: ${id} removed`;
+    this.favouritesService.removeAnywhere('tracks', id);
   }
 }
