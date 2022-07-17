@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger';
+import 'dotenv/config';
 import { readFile } from 'fs/promises';
 import { dirname, join } from 'path';
 import { parse } from 'yaml';
@@ -8,6 +9,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const port = process.env.PORT || 4000;
 
   const root = dirname(__dirname);
   const api = await readFile(join(root, 'doc', 'api.yaml'), 'utf-8');
@@ -17,6 +19,6 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );
-  await app.listen(4000);
+  await app.listen(port);
 }
 bootstrap();
