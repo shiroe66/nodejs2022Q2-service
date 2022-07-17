@@ -14,7 +14,7 @@ import { FavouritesService } from 'src/favourites/favourites.service';
 @Injectable()
 export class TrackService {
   constructor(
-    private readonly inMemoryDB: InMemoryDB<Track>,
+    private inMemoryDB: InMemoryDB<Track>,
     @Inject(forwardRef(() => FavouritesService))
     private readonly favouritesService: FavouritesService,
   ) {}
@@ -44,13 +44,12 @@ export class TrackService {
   }
 
   update(id: string, UpdateTrackDto: UpdateTrackDto): Track {
-    const track = this.inMemoryDB.findOne(id);
-
-    if (!track) {
+    try {
+      this.inMemoryDB.findOne(id);
+      return this.inMemoryDB.update(id, UpdateTrackDto);
+    } catch (error) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
-
-    return this.inMemoryDB.update(id, UpdateTrackDto);
   }
 
   remove(id: string) {
@@ -61,5 +60,29 @@ export class TrackService {
     }
 
     this.favouritesService.removeAnywhere('tracks', id);
+  }
+
+  removeAlbumId(id: string) {
+    const tracks = this.inMemoryDB.findAll();
+
+    this.inMemoryDB.list = tracks.map((track) => {
+      if (track && track.albumId === id) {
+        track.albumId = null;
+        return track;
+      }
+      return track;
+    });
+  }
+
+  removeArtistId(id: string) {
+    const tracks = this.inMemoryDB.findAll();
+
+    this.inMemoryDB.list = tracks.map((track) => {
+      if (track && track.artistId === id) {
+        track.artistId = null;
+        return track;
+      }
+      return track;
+    });
   }
 }

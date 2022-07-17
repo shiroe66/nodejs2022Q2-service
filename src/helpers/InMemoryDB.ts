@@ -9,7 +9,9 @@ export class InMemoryDB<T extends { id: string }> {
   }
 
   findOne(id: string) {
-    return this.list.find((item) => item.id === id);
+    const item = this.list.find((item) => item && item.id === id);
+
+    return item || null;
   }
 
   create(item: T) {
@@ -20,12 +22,13 @@ export class InMemoryDB<T extends { id: string }> {
   update(id: string, updatedItem: Partial<T>) {
     const item = this.findOne(id);
 
-    return Object.assign(item, updatedItem);
+    return Object.assign(item, updatedItem) || null;
   }
 
   delete(id: string) {
     const length = this.list.length;
-    this.list = this.list.filter((item) => item.id !== id);
+
+    this.list = this.list.filter((item) => item && item.id !== id);
     return length === this.list.length;
   }
 }

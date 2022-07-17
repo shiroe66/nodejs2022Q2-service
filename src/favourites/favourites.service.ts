@@ -67,7 +67,7 @@ export class FavouritesService {
     const items = this.inMemoryStore[type].findAll();
 
     this.inMemoryStore[type].list = items.map((item) => {
-      if (item.id === id) {
+      if (item && item.id === id) {
         item = null;
       }
     });

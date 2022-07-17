@@ -10,6 +10,8 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
 import { InMemoryDB } from 'src/helpers/InMemoryDB';
 import { FavouritesService } from 'src/favourites/favourites.service';
+import { AlbumService } from 'src/album/album.service';
+import { TrackService } from 'src/track/track.service';
 
 @Injectable()
 export class ArtistService {
@@ -17,6 +19,10 @@ export class ArtistService {
     private readonly inMemoryDB: InMemoryDB<Artist>,
     @Inject(forwardRef(() => FavouritesService))
     private readonly favouritesService: FavouritesService,
+    @Inject(forwardRef(() => AlbumService))
+    private readonly albumService: AlbumService,
+    @Inject(forwardRef(() => TrackService))
+    private readonly trackService: TrackService,
   ) {}
 
   create(createArtistDto: CreateArtistDto): Artist {
@@ -54,12 +60,14 @@ export class ArtistService {
   }
 
   remove(id: string) {
-    const isRemoved = this.inMemoryDB.delete(id);
+    const isNotRemoved = this.inMemoryDB.delete(id);
 
-    if (isRemoved) {
+    if (isNotRemoved) {
       throw new NotFoundException(`Artist with id ${id} not found`);
     }
 
+    this.albumService.removeArtistId(id);
+    this.trackService.removeArtistId(id);
     this.favouritesService.removeAnywhere('artists', id);
   }
 }
