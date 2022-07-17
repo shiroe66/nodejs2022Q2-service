@@ -19,7 +19,7 @@ npm install
 Rename .env.example file to .env
 
 ```bash
-npm run start
+npm start
 ```
 
 After starting the app on port (4000 as default) you can open
