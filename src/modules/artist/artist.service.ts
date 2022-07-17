@@ -9,9 +9,9 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
 import { InMemoryDB } from 'src/helpers/InMemoryDB';
-import { FavouritesService } from 'src/favourites/favourites.service';
-import { AlbumService } from 'src/album/album.service';
-import { TrackService } from 'src/track/track.service';
+import { FavouritesService } from '../favourites/favourites.service';
+import { AlbumService } from '../album/album.service';
+import { TrackService } from '../track/track.service';
 
 @Injectable()
 export class ArtistService {

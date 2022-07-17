@@ -4,12 +4,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InMemoryDB } from 'src/helpers/InMemoryDB';
+import { InMemoryDB } from '../../helpers/InMemoryDB';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
 import { v4 as uuidv4 } from 'uuid';
-import { FavouritesService } from 'src/favourites/favourites.service';
+import { FavouritesService } from '../favourites/favourites.service';
 
 @Injectable()
 export class TrackService {

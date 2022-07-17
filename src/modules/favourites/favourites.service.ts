@@ -5,10 +5,10 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { AlbumService } from 'src/album/album.service';
-import { ArtistService } from 'src/artist/artist.service';
-import { InMemoryDB } from 'src/helpers/InMemoryDB';
-import { TrackService } from 'src/track/track.service';
+import { AlbumService } from '../album/album.service';
+import { ArtistService } from '../artist/artist.service';
+import { InMemoryDB } from '../../helpers/InMemoryDB';
+import { TrackService } from '../track/track.service';
 import { Favourite } from './entities/favourite.entity';
 
 type IDType = { id: string };

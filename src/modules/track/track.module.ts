@@ -1,8 +1,8 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { AlbumModule } from 'src/album/album.module';
-import { ArtistModule } from 'src/artist/artist.module';
-import { FavouritesModule } from 'src/favourites/favourites.module';
-import { InMemoryDB } from 'src/helpers/InMemoryDB';
+import { AlbumModule } from '../album/album.module';
+import { ArtistModule } from '../artist/artist.module';
+import { FavouritesModule } from '../favourites/favourites.module';
+import { InMemoryDB } from '../../helpers/InMemoryDB';
 import { TrackController } from './track.controller';
 import { TrackService } from './track.service';
 
