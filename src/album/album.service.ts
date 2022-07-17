@@ -71,8 +71,9 @@ export class AlbumService {
     const albums = this.inMemoryDB.findAll();
 
     this.inMemoryDB.list = albums.map((album) => {
-      if (album.artistId === id) {
-        return (album.artistId = null);
+      if (album && album.artistId === id) {
+        album.artistId = null;
+        return album;
       }
       return album;
     });

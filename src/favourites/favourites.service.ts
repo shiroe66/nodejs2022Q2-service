@@ -66,10 +66,6 @@ export class FavouritesService {
   removeAnywhere(type: string, id: string) {
     const items = this.inMemoryStore[type].findAll();
 
-    this.inMemoryStore[type].list = items.map((item) => {
-      if (item && item.id === id) {
-        item = null;
-      }
-    });
+    this.inMemoryStore[type].list = items.filter((item) => item.id !== id);
   }
 }
