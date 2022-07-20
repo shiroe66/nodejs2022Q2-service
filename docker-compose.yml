@@ -1,18 +1,18 @@
-version: '3.9'
+version: '3.8'
 
 services:
   node:
-    container_name: nest
+    container_name: node
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./Dockerfile
     restart: always
+    env_file:
+      - .env
     ports:
     - ${PORT}:${PORT}
     depends_on:
       - postgres
-    env_file:
-      - .env
     volumes:
       - .:/usr/app/
       - /usr/app/node_modules
