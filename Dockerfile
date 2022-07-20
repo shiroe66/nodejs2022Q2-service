@@ -1,9 +1,11 @@
-FROM node:16-alpine
+FROM node:lts-alpine
 
-EXPOSE 4000
-
-WORKDIR /app
-COPY package*.json .
+WORKDIR /usr/app/src
+COPY package*.json ./
 
 RUN npm install
 COPY . .
+COPY .env.example .env
+
+EXPOSE ${PORT}
+CMD [ "npm", "run", "start:dev" ]
