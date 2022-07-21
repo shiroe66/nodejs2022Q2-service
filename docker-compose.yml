@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    restart: always
+    restart: unless-stopped
     env_file:
       - .env
     ports:
@@ -21,7 +21,7 @@ services:
     build: 
       context: .
       dockerfile: ./database/Dockerfile
-    restart: always
+    restart: unless-stopped
     ports:
       - "5432:5432"
     environment:
@@ -29,7 +29,12 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_logs:/var/log/postgresql/postgresql.log
+
+volumes:
+  postgres_logs:
+  postgres_data:
 
 networks:
   default:
