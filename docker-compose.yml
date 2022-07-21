@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   node:
+    image: node
     container_name: node
     build:
       context: .
@@ -18,6 +19,7 @@ services:
       - /usr/app/node_modules
     
   postgres:
+    image: postgres
     build: 
       context: .
       dockerfile: ./database/Dockerfile
