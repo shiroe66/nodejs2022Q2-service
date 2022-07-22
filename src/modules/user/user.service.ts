@@ -14,12 +14,10 @@ import { exclude } from 'src/helpers/excludeField';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async create(CreateUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
+  async create(CreateUserDto: CreateUserDto) {
     const data = await this.prisma.user.create({
       data: {
         ...CreateUserDto,
-        id: uuidv4(),
-        version: 1,
         createdAt: +new Date(),
         updatedAt: +new Date(),
       },
@@ -61,8 +59,8 @@ export class UserService {
     const data = await this.prisma.user.update({
       where: { id },
       data: {
-        password: newPassword,
         version: ++user.version,
+        password: newPassword,
         updatedAt: +new Date(),
       },
     });
