@@ -24,7 +24,7 @@ export class UserController {
   @Post()
   @HttpCode(201)
   create(@Body() CreateUserDto: CreateUserDto) {
-    return this.userService.create(CreateUserDto);
+    // return this.userService.create(CreateUserDto);
   }
 
   @Get()
@@ -36,7 +36,7 @@ export class UserController {
   @Get(':id')
   @HttpCode(200)
   findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.userService.findOne(id);
+    // return this.userService.findOne(id);
   }
 
   @Put(':id')
@@ -45,12 +45,12 @@ export class UserController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() UpdateUserDto: UpdateUserDto,
   ) {
-    return this.userService.update(id, UpdateUserDto);
+    // return this.userService.update(id, UpdateUserDto);
   }
 
   @Delete(':id')
   @HttpCode(204)
   remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.userService.remove(id);
+    // return this.userService.remove(id);
   }
 }
