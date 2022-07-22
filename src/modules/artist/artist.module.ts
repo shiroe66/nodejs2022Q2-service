@@ -5,6 +5,7 @@ import { InMemoryDB } from '../../helpers/InMemoryDB';
 import { TrackModule } from '../track/track.module';
 import { ArtistController } from './artist.controller';
 import { ArtistService } from './artist.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
   controllers: [ArtistController],
@@ -14,6 +15,6 @@ import { ArtistService } from './artist.service';
     forwardRef(() => FavouritesModule),
   ],
   exports: [ArtistService],
-  providers: [ArtistService, InMemoryDB],
+  providers: [ArtistService, PrismaService],
 })
 export class ArtistModule {}
