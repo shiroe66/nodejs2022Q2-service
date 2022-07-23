@@ -6,7 +6,6 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { exclude } from 'src/helpers/excludeField';
 
@@ -14,7 +13,7 @@ import { exclude } from 'src/helpers/excludeField';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async create(CreateUserDto: CreateUserDto) {
+  async create(CreateUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
     const data = await this.prisma.user.create({
       data: {
         ...CreateUserDto,

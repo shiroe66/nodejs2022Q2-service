@@ -1,28 +1,12 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
-import { FavouritesService } from '../favourites/favourites.service';
-import { AlbumService } from '../album/album.service';
-import { TrackService } from '../track/track.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ArtistService {
-  constructor(
-    private prisma: PrismaService,
-    @Inject(forwardRef(() => FavouritesService))
-    private readonly favouritesService: FavouritesService,
-    @Inject(forwardRef(() => AlbumService))
-    private readonly albumService: AlbumService,
-    @Inject(forwardRef(() => TrackService))
-    private readonly trackService: TrackService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async create(createArtistDto: CreateArtistDto): Promise<Artist> {
     return await this.prisma.artist.create({ data: createArtistDto });
@@ -53,15 +37,11 @@ export class ArtistService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<void> {
     try {
       await this.prisma.artist.delete({ where: { id } });
     } catch (error) {
       throw new NotFoundException(`Artist with id ${id} not found`);
     }
-
-    this.albumService.removeArtistId(id);
-    this.trackService.removeArtistId(id);
-    this.favouritesService.removeAnywhere('artists', id);
   }
 }

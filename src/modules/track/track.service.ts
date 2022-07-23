@@ -7,16 +7,11 @@ import {
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
-import { FavouritesService } from '../favourites/favourites.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TrackService {
-  constructor(
-    private prisma: PrismaService,
-    @Inject(forwardRef(() => FavouritesService))
-    private readonly favouritesService: FavouritesService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async create(CreateTrackDto: CreateTrackDto): Promise<Track> {
     return await this.prisma.track.create({ data: CreateTrackDto });
@@ -53,20 +48,5 @@ export class TrackService {
     } catch (error) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
-    this.favouritesService.removeAnywhere('tracks', id);
-  }
-
-  async removeAlbumId(id: string): Promise<void> {
-    await this.prisma.track.updateMany({
-      where: { albumId: { equals: id } },
-      data: { albumId: null },
-    });
-  }
-
-  async removeArtistId(id: string): Promise<void> {
-    await this.prisma.track.updateMany({
-      where: { artistId: { equals: id } },
-      data: { artistId: null },
-    });
   }
 }
