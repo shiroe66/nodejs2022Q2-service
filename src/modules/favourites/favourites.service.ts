@@ -1,71 +1,72 @@
 import {
-  forwardRef,
-  Inject,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { AlbumService } from '../album/album.service';
-import { ArtistService } from '../artist/artist.service';
-import { InMemoryDB } from '../../helpers/InMemoryDB';
-import { TrackService } from '../track/track.service';
-import { Favourite } from './entities/favourite.entity';
-
-type IDType = { id: string };
-type StoreType = Record<keyof Favourite, InMemoryDB<IDType>>;
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Favourites } from '@prisma/client';
 
 @Injectable()
 export class FavouritesService {
-  inMemoryStore: StoreType;
+  constructor(private prisma: PrismaService) {}
 
-  constructor(
-    @Inject(forwardRef(() => ArtistService))
-    private artistsService: ArtistService,
-    @Inject(forwardRef(() => AlbumService))
-    private albumsService: AlbumService,
-    @Inject(forwardRef(() => TrackService))
-    private tracksService: TrackService,
-  ) {
-    this.inMemoryStore = {
-      artists: new InMemoryDB(),
-      albums: new InMemoryDB(),
-      tracks: new InMemoryDB(),
-    };
+  async findAll(): Promise<Omit<Favourites, 'id'>> {
+    const [item] = await this.prisma.favourites.findMany({
+      select: {
+        albums: {
+          select: { id: true, name: true, year: true, artistId: true },
+        },
+        artists: {
+          select: { id: true, name: true, grammy: true },
+        },
+        tracks: {
+          select: {
+            id: true,
+            name: true,
+            duration: true,
+            artistId: true,
+            albumId: true,
+          },
+        },
+      },
+    });
+    return item;
   }
 
-  findAll() {
-    const { albums, artists, tracks } = this.inMemoryStore;
+  async add(type: string, id: string): Promise<void> {
+    const item = await this.prisma[type].findFirst({ where: { id } });
 
-    return {
-      albums: albums.list,
-      artists: artists.list,
-      tracks: tracks.list,
-    };
-  }
-
-  add(type: string, id: string) {
-    const service = this[`${type}Service`];
-
-    try {
-      const findById = service.findOne(id);
-
-      return this.inMemoryStore[type].create(findById);
-    } catch (error) {
+    if (!item) {
       throw new UnprocessableEntityException("ID doesn't exist");
     }
+
+    const favourites = await this.prisma.favourites.findMany();
+
+    if (!favourites.length) {
+      const createdFavs = await this.prisma.favourites.create({ data: {} });
+
+      await this.prisma[type].update({
+        where: { id },
+        data: { favouriteId: createdFavs.id },
+      });
+    } else {
+      await this.prisma[type].update({
+        where: { id },
+        data: { favouriteId: favourites[0].id },
+      });
+    }
+
+    return item;
   }
 
-  remove(type: string, id: string) {
-    const isNotRemoved = this.inMemoryStore[type].delete(id);
-
-    if (isNotRemoved) {
+  async remove(type: string, id: string): Promise<void> {
+    try {
+      await this.prisma[type].update({
+        where: { id },
+        data: { favouriteId: { set: null } },
+      });
+    } catch (error) {
       throw new NotFoundException(`ID ${id} not found`);
     }
-  }
-
-  removeAnywhere(type: string, id: string) {
-    const items = this.inMemoryStore[type].findAll();
-
-    this.inMemoryStore[type].list = items.filter((item) => item.id !== id);
   }
 }
