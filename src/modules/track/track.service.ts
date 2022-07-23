@@ -4,37 +4,30 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InMemoryDB } from '../../helpers/InMemoryDB';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
-import { v4 as uuidv4 } from 'uuid';
 import { FavouritesService } from '../favourites/favourites.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TrackService {
   constructor(
-    private inMemoryDB: InMemoryDB<Track>,
+    private prisma: PrismaService,
     @Inject(forwardRef(() => FavouritesService))
     private readonly favouritesService: FavouritesService,
   ) {}
 
-  create(CreateTrackDto: CreateTrackDto): Track {
-    const track = {
-      ...CreateTrackDto,
-      id: uuidv4(),
-    };
-
-    this.inMemoryDB.create(track);
-    return track;
+  async create(CreateTrackDto: CreateTrackDto): Promise<Track> {
+    return await this.prisma.track.create({ data: CreateTrackDto });
   }
 
-  findAll(): Track[] {
-    return this.inMemoryDB.findAll();
+  async findAll(): Promise<Track[]> {
+    return await this.prisma.track.findMany();
   }
 
-  findOne(id: string): Track {
-    const track = this.inMemoryDB.findOne(id);
+  async findOne(id: string): Promise<Track> {
+    const track = await this.prisma.track.findUnique({ where: { id } });
 
     if (!track) {
       throw new NotFoundException(`Track with id ${id} not found`);
@@ -43,46 +36,37 @@ export class TrackService {
     return track;
   }
 
-  update(id: string, UpdateTrackDto: UpdateTrackDto): Track {
+  async update(id: string, UpdateTrackDto: UpdateTrackDto): Promise<Track> {
     try {
-      this.inMemoryDB.findOne(id);
-      return this.inMemoryDB.update(id, UpdateTrackDto);
+      return await this.prisma.track.update({
+        where: { id },
+        data: UpdateTrackDto,
+      });
     } catch (error) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
   }
 
-  remove(id: string) {
-    const isRemoved = this.inMemoryDB.delete(id);
-
-    if (isRemoved) {
+  async remove(id: string): Promise<void> {
+    try {
+      await this.prisma.track.delete({ where: { id } });
+    } catch (error) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
-
     this.favouritesService.removeAnywhere('tracks', id);
   }
 
-  removeAlbumId(id: string) {
-    const tracks = this.inMemoryDB.findAll();
-
-    this.inMemoryDB.list = tracks.map((track) => {
-      if (track && track.albumId === id) {
-        track.albumId = null;
-        return track;
-      }
-      return track;
+  async removeAlbumId(id: string): Promise<void> {
+    await this.prisma.track.updateMany({
+      where: { albumId: { equals: id } },
+      data: { albumId: null },
     });
   }
 
-  removeArtistId(id: string) {
-    const tracks = this.inMemoryDB.findAll();
-
-    this.inMemoryDB.list = tracks.map((track) => {
-      if (track && track.artistId === id) {
-        track.artistId = null;
-        return track;
-      }
-      return track;
+  async removeArtistId(id: string): Promise<void> {
+    await this.prisma.track.updateMany({
+      where: { artistId: { equals: id } },
+      data: { artistId: null },
     });
   }
 }
